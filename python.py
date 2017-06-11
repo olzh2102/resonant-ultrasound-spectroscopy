@@ -23,20 +23,20 @@ class TransCoeff:
 
     " -- Square minima between measured and calculated magnitude and phase -- "
     def magnitude_error(self,calculated):
-        return(sum(((self.amplitude() - calculated.amplitude()) /
+    return(sum(((self.amplitude() - calculated.amplitude()) /
         self.amplitude()) ** 2)) ** (1.0/2.0)/ len(self.CT[:,1])*1000
     " ----------------------------------------------------------------------- "
     def phase_error(self, calculated):
-        return(sum(((self.phase() - calculated.phase()) ) ** 2)) ** (1.0/2.0) /
+    return(sum(((self.phase() - calculated.phase()) ) ** 2)) ** (1.0/2.0) /
         len(self.CT[:,2]) * 1000
 
     " -- Frequency function goes through all the values until it finds the max."
     " value of frequency and return freq, magn, phase and index"
     def maxfreq(self): #function to find maximum value of amplitude (Fr)
         n = 0 #start counting from 0
-        while not (self.amplitude()[n] == max(self.amplitude()) ): #if it is not max, then keep counting
-            n+= 1
-            return [self.frequency()[n], self.amplitude()[n], self.phase()[n], n]
+        while not (self.amplitude()[n] == max(self.amplitude()) ):
+            n+= 1 #if it is not max, then keep counting
+    return [self.frequency()[n], self.amplitude()[n], self.phase()[n], n]
 
     " - This function determines Q factor of the resonance peak ------------- "
     " - It consider the cases when not all the resonance peaks are in range of"
@@ -87,3 +87,12 @@ class TransCoeff:
         impedance1 = otherMedium.Vel * otherMedium.Dens
         attenuation = 3.14159 * self.maxfreq()[0]/(velocity/self.qfactor()[0])
         c = attyDen(attenuation,thickness,10**(self.maxfreq()[1]/20))
+        attenuation = c[0]#this one is down
+        density = impedance1/c[1]
+
+    return [thickness, velocity, attenuation, density, 1, self.maxfreq()[0]]
+
+    " - Takes the measured spectra and returns the portion of the spectra in the
+    " - vicinity of the first thickness resonance. The gradient descent algorithm
+    " - is executed taking this reduced portion of the measured spectra.
+    def resWindow(self, boundary):
